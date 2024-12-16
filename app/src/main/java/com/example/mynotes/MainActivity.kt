@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentTransaction
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnFragmentDataListener {
 
     private lateinit var toolbarMain: Toolbar
 
@@ -33,6 +33,21 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().replace(R.id.containerID, firstFragment).commit()
         }
     }
+
+    override fun onData(note: Note) {
+        val bundle = Bundle()
+        bundle.putSerializable("note",note)
+
+        val transaction = this.supportFragmentManager.beginTransaction()
+        val detailFragment = DetailFragment()
+        detailFragment.arguments = bundle
+
+        transaction.replace(R.id.containerID, detailFragment)
+        transaction.addToBackStack(null)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        transaction.commit()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true

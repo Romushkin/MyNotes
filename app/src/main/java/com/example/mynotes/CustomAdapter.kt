@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter (private var notesList: MutableList<Note>):
+class CustomAdapter(private var notesList: MutableList<Note>) :
     RecyclerView.Adapter<CustomAdapter.NoteViewHolder>() {
 
     private var onNoteClickListener: OnNoteClickListener? = null
@@ -17,7 +17,7 @@ class CustomAdapter (private var notesList: MutableList<Note>):
     }
 
 
-    class NoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val nameTv: TextView = itemView.findViewById(R.id.itemNameNoteTextViewTV)
         val dateTv: TextView = itemView.findViewById(R.id.itemDateNoteTextViewTV)
@@ -37,11 +37,15 @@ class CustomAdapter (private var notesList: MutableList<Note>):
         val note = notesList[position]
         holder.nameTv.text = note.date
         holder.dateTv.text = "№${note.id}: ${note.name}"
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener {
             if (onNoteClickListener != null) {
                 onNoteClickListener!!.onNoteClick(note, position)
             }
         }
+    }
+
+    fun setOnNoteClickListener(onNoteClickListener: OnNoteClickListener) {
+        this.onNoteClickListener = onNoteClickListener
     }
 
     fun updateData(newNoteList: MutableList<Note>) {

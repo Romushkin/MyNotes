@@ -12,9 +12,10 @@ import com.example.mynotes.databinding.FragmentFirstBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class FirstFragment : Fragment(){
+class FirstFragment : Fragment() {
 
     private var noteList: MutableList<Note> = mutableListOf()
+    private lateinit var onFragmentDataListener: OnFragmentDataListener
     private lateinit var binding: FragmentFirstBinding
     private lateinit var adapter: CustomAdapter
     private lateinit var db: DBHelper
@@ -25,8 +26,10 @@ class FirstFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentFirstBinding.inflate(inflater,container,false)
-        db = DBHelper(requireContext(),null)
+        binding = FragmentFirstBinding.inflate(inflater, container, false)
+        onFragmentDataListener = requireActivity() as OnFragmentDataListener
+
+        db = DBHelper(requireContext(), null)
         noteList = db.getNotes()
 
         adapter = CustomAdapter(noteList)
@@ -34,12 +37,12 @@ class FirstFragment : Fragment(){
         binding.fragmentRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 
-        binding.fragmentSaveButtonBTN.setOnClickListener{
+        binding.fragmentSaveButtonBTN.setOnClickListener {
 
-            if (binding.fragmentNameNoteEditTextET.text.isNotEmpty()){
+            if (binding.fragmentNameNoteEditTextET.text.isNotEmpty()) {
                 val note = binding.fragmentNameNoteEditTextET.text.toString()
                 val id = noteList.size.plus(1)
-                val noteToDB = Note(id,note,getTimeNow())
+                val noteToDB = Note(id, note, getTimeNow())
                 db.addNote(noteToDB)
 
                 val newNoteList = db.getNotes()
@@ -51,6 +54,12 @@ class FirstFragment : Fragment(){
                 Toast.makeText(context, "Заполните поле", Toast.LENGTH_SHORT).show()
             }
         }
+
+        adapter.setOnNoteClickListener(object : CustomAdapter.OnNoteClickListener {
+            override fun onNoteClick(note: Note, position: Int) {
+                onFragmentDataListener.onData(note)
+            }
+        })
 
         return binding.root
     }
@@ -65,7 +74,7 @@ class FirstFragment : Fragment(){
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getTimeNow(): String{
+    fun getTimeNow(): String {
         val datetime = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
         return datetime
     }
